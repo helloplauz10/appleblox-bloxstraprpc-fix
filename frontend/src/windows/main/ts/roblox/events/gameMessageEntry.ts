@@ -3,7 +3,7 @@ import { RPCController, type RPCOptions } from '../../tools/rpc';
 import type { GameEventInfo } from '../instance';
 import { RobloxWindow, type WindowData } from '../window';
 import type { RichPresence, SetWindowData } from './types';
-import { sleep } from '../../utils';
+import { sleep, curlPost } from '../../utils';
 
 let rpcOptions: RPCOptions = {
 	clientId: '1257650541677383721',
@@ -15,6 +15,16 @@ type GameMessage =
 	| { data: SetWindowData; command: 'SetWindow' }
 	| { data: never; command: 'RestoreWindowState' | 'RestoreWindow' | 'ResetWindow' }
 	| { data: never; command: 'SaveWindowState' | 'SetWindowDefault' };
+
+interface ThumbnailBatchData = {
+	requestId: any;
+	errorCode: number;
+	errorMessage: string;
+	targetId: number;
+	state: string;
+	imageUrl: string;
+	version: string;
+}
 
 async function gameMessageEntry(messageData: GameEventInfo) {
 	if ((await getValue<boolean>('integrations.sdk.enabled')) !== true) return; // For now, game messages are only used for the SDK.
@@ -73,13 +83,40 @@ async function gameMessageEntry(messageData: GameEventInfo) {
 				details: data.details,
 				state: data.state,
 			};
+			// bad code - drake
 			if (data.smallImage) {
 				if (data.smallImage.hoverText) rpcOptions.smallImageText = data.smallImage.hoverText;
-				rpcOptions.smallImage = `https://assetdelivery.roblox.com/v1/asset/?id=${data.smallImage.assetId}`;
+				console.info("[Activity] Requesting thumbnail for small image");
+				try {
+					const thumbnailReq: ThumbnailBatchData = await curlPost("https://thumbnails.roblox.com/v1/batch", JSON.stringify({
+						targetId: data.smallImage.assetId,
+						type: "Asset",
+						size: "75x75",
+						isCircular: false,
+					})).data[0];
+				} catch (err) {
+					console.error(`[Activity] Cannot get thumbnail for small image: ${err}`);
+					return;
+				}
+				
+				rpcOptions.smallImage = thumbnailReq.imageUrl;
 			}
 			if (data.largeImage) {
 				if (data.largeImage.hoverText) rpcOptions.largeImage = data.largeImage.hoverText;
-				rpcOptions.largeImage = `https://assetdelivery.roblox.com/v1/asset/?id=${data.largeImage.assetId}`;
+				console.info("[Activity] Requesting thumbnail for large image");
+				try {
+					const thumbnailReq: ThumbnailBatchData[] = await curlPost("https://thumbnails.roblox.com/v1/batch", JSON.stringify({
+						targetId: data.largeImage.assetId,
+						type: "Asset",
+						size: "512x512",
+						isCircular: false,
+					})).data[0];
+				} catch (err) {
+					console.error(`[Activity] Cannot get thumbnail for large image: ${err}`);
+					return;
+				}
+				
+				rpcOptions.largeImage = thumbnailReq.imageUrl;
 			}
 			RPCController.set(rpcOptions);
 			break;
