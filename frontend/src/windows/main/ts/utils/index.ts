@@ -18,7 +18,7 @@ export async function curlGet(url: string): Promise<any> {
 // MADE WITH AI AND COPIED LINES HERE BY DRAKE, I dont know typescript yet.
 export async function curlPost(url: string, data: any): Promise<any> {
 	const res = JSON.parse(
-		(await shell('curl', ['-X', 'POST', '-H', 'Content-Type: application/json', '-d', data]. { skipStderrCheck: true})).stdOut
+		(await shell('curl', ['-X', 'POST', '-H', 'Content-Type: application/json', '-d', data], { skipStderrCheck: true})).stdOut
 	);
 	return res;
 }
