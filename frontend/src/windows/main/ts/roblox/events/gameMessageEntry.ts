@@ -88,12 +88,12 @@ async function gameMessageEntry(messageData: GameEventInfo) {
 				if (data.smallImage.hoverText) rpcOptions.smallImageText = data.smallImage.hoverText;
 				console.info("[Activity] Requesting thumbnail for small image");
 				try {
-					const thumbnailReq: ThumbnailBatchData = await curlPost("https://thumbnails.roblox.com/v1/batch", JSON.stringify({
+					const thumbnailReq: ThumbnailBatchData = (await curlPost("https://thumbnails.roblox.com/v1/batch", JSON.stringify({
 						targetId: data.smallImage.assetId,
 						type: "Asset",
 						size: "75x75",
 						isCircular: false,
-					})).data[0];
+					}))).data[0];
 				} catch (err) {
 					console.error(`[Activity] Cannot get thumbnail for small image: ${err}`);
 					return;
@@ -105,12 +105,12 @@ async function gameMessageEntry(messageData: GameEventInfo) {
 				if (data.largeImage.hoverText) rpcOptions.largeImage = data.largeImage.hoverText;
 				console.info("[Activity] Requesting thumbnail for large image");
 				try {
-					const thumbnailReq: ThumbnailBatchData[] = await curlPost("https://thumbnails.roblox.com/v1/batch", JSON.stringify({
+					const thumbnailReq: ThumbnailBatchData[] = (await curlPost("https://thumbnails.roblox.com/v1/batch", JSON.stringify({
 						targetId: data.largeImage.assetId,
 						type: "Asset",
 						size: "512x512",
 						isCircular: false,
-					})).data[0];
+					}))).data[0];
 				} catch (err) {
 					console.error(`[Activity] Cannot get thumbnail for large image: ${err}`);
 					return;
