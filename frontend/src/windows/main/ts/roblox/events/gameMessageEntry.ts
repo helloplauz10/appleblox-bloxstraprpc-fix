@@ -95,6 +95,7 @@ async function gameMessageEntry(messageData: GameEventInfo) {
 						size: "75x75",
 						isCircular: false,
 					}))).data[0];
+					console.info("[Activity] Thumbnail batch:", thumbnailReq);
 				} catch (err) {
 					console.error(`[Activity] Cannot get thumbnail for small image: ${err}`);
 					return;
@@ -113,6 +114,7 @@ async function gameMessageEntry(messageData: GameEventInfo) {
 						size: "512x512",
 						isCircular: false,
 					}))).data[0];
+					console.info("[Activity] Thumbnail batch:", thumbnailReq);
 				} catch (err) {
 					console.error(`[Activity] Cannot get thumbnail for large image: ${err}`);
 					return;
