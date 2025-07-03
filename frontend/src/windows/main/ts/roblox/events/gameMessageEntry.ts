@@ -16,7 +16,7 @@ type GameMessage =
 	| { data: never; command: 'RestoreWindowState' | 'RestoreWindow' | 'ResetWindow' }
 	| { data: never; command: 'SaveWindowState' | 'SetWindowDefault' };
 
-interface ThumbnailBatchData = {
+interface ThumbnailBatchData {
 	requestId: any;
 	errorCode: number;
 	errorMessage: string;
